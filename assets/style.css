@@ -1,0 +1,252 @@
+/* 灰域 / Gray Domain — 電子書排版 */
+
+:root {
+  --reading-scale: 1;               /* 由 reader.js 依 localStorage 調整 */
+
+  --bg: #f4f1ea;
+  --surface: #fbf9f4;
+  --ink: #2b2824;
+  --ink-soft: #6b6459;
+  --ink-faint: #9a9284;
+  --rule: #ddd6c8;
+  --accent: #8a7a5c;
+  --link: #6b5d43;
+
+  --serif: "Noto Serif CJK TC", "Noto Serif TC", "Songti TC", "Source Han Serif TC",
+           "STSong", "SimSun", Georgia, "Times New Roman", serif;
+  --sans: "Noto Sans CJK TC", "PingFang TC", "Microsoft JhengHei", system-ui,
+          -apple-system, "Segoe UI", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16161a;
+    --surface: #1d1d22;
+    --ink: #d7d2c8;
+    --ink-soft: #9a948a;
+    --ink-faint: #6c675d;
+    --rule: #33323a;
+    --accent: #b3a67e;
+    --link: #c8b98f;
+  }
+}
+
+/* 手動切換覆蓋系統設定 */
+:root[data-theme="light"] {
+  --bg: #f4f1ea; --surface: #fbf9f4; --ink: #2b2824; --ink-soft: #6b6459;
+  --ink-faint: #9a9284; --rule: #ddd6c8; --accent: #8a7a5c; --link: #6b5d43;
+}
+:root[data-theme="dark"] {
+  --bg: #16161a; --surface: #1d1d22; --ink: #d7d2c8; --ink-soft: #9a948a;
+  --ink-faint: #6c675d; --rule: #33323a; --accent: #b3a67e; --link: #c8b98f;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--serif);
+  line-height: 1.9;
+  letter-spacing: 0.01em;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- 工具列 ---------- */
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem clamp(1rem, 4vw, 2rem);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--sans);
+  font-size: 0.9rem;
+}
+.toolbar .home, .toolbar .home-mark { color: var(--ink-soft); font-weight: 600; letter-spacing: 0.08em; }
+.controls { display: flex; gap: 0.4rem; }
+.controls button {
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.controls button:hover { color: var(--ink); border-color: var(--accent); }
+
+/* ---------- 首頁 ---------- */
+.hero {
+  text-align: center;
+  padding: clamp(3rem, 12vh, 7rem) 1.5rem clamp(2rem, 6vh, 3.5rem);
+}
+.novel-title {
+  font-size: clamp(2.8rem, 12vw, 5rem);
+  margin: 0;
+  letter-spacing: 0.35em;
+  text-indent: 0.35em;         /* 補償字距造成的偏移 */
+  font-weight: 700;
+}
+.novel-title-en {
+  font-family: var(--sans);
+  color: var(--ink-faint);
+  letter-spacing: 0.5em;
+  text-indent: 0.5em;
+  text-transform: uppercase;
+  font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+  margin: 0.9rem 0 0;
+}
+.tagline { color: var(--ink-soft); margin-top: 1.4rem; }
+
+.toc {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 0 clamp(1.2rem, 5vw, 2rem) 4rem;
+}
+.toc h2 {
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  letter-spacing: 0.4em;
+  text-indent: 0.4em;
+  color: var(--ink-faint);
+  text-align: center;
+  font-weight: 600;
+  margin: 0 0 1.5rem;
+}
+.chapter-list { list-style: none; margin: 0; padding: 0; }
+.chapter-list li { border-top: 1px solid var(--rule); }
+.chapter-list li:last-child { border-bottom: 1px solid var(--rule); }
+.chapter-list a {
+  display: flex;
+  align-items: baseline;
+  gap: 1.2rem;
+  padding: 1.15rem 0.5rem;
+  color: var(--ink);
+}
+.chapter-list a:hover { text-decoration: none; background: var(--surface); }
+.ep-no {
+  font-family: var(--sans);
+  color: var(--accent);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  min-width: 2.2em;
+}
+.ep-title { font-size: 1.15rem; }
+.chapter-list .empty { padding: 1.5rem 0.5rem; color: var(--ink-faint); text-align: center; }
+
+/* ---------- 章節閱讀頁 ---------- */
+.chapter {
+  max-width: 38rem;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 6vw, 3.5rem) clamp(1.2rem, 6vw, 2rem) 4rem;
+}
+.chapter-head {
+  text-align: center;
+  margin-bottom: clamp(2rem, 7vh, 3.5rem);
+}
+.chapter-head .novel-name {
+  font-family: var(--sans);
+  color: var(--ink-faint);
+  letter-spacing: 0.4em;
+  text-indent: 0.4em;
+  font-size: 0.8rem;
+  margin: 0 0 0.8rem;
+}
+.chapter-head h1 {
+  font-size: clamp(1.8rem, 7vw, 2.6rem);
+  margin: 0;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+
+.prose {
+  font-size: calc(1.12rem * var(--reading-scale));
+}
+.prose p {
+  margin: 0 0 1.5em;
+  text-align: justify;
+  text-justify: inter-ideograph;
+}
+.prose h2, .prose h3, .prose h4 {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 2.4em 0 1.2em;
+}
+.prose strong { font-weight: 700; color: var(--ink); }
+
+/* 場景細線 */
+hr.scene {
+  border: 0;
+  height: 1px;
+  background: var(--rule);
+  width: 40%;
+  margin: 2.6em auto;
+}
+/* 星號裝飾（較大的段落／視角切換） */
+.asterism {
+  text-align: center;
+  color: var(--ink-faint);
+  letter-spacing: 0.2em;
+  margin: 3em 0;
+  font-size: 0.9em;
+  user-select: none;
+}
+
+/* ---------- 章節導覽 ---------- */
+.chapter-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  font-family: var(--sans);
+  font-size: 0.88rem;
+}
+.chapter-nav.top {
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 1.4rem;
+  margin-bottom: clamp(2rem, 6vh, 3rem);
+}
+.chapter-nav.bottom {
+  border-top: 1px solid var(--rule);
+  padding-top: 1.6rem;
+  margin-top: clamp(2.5rem, 8vh, 4rem);
+}
+.chapter-nav a, .chapter-nav span { color: var(--ink-soft); }
+.chapter-nav a:hover { color: var(--accent); text-decoration: none; }
+.chapter-nav .nav-index {
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  color: var(--ink-faint);
+}
+.chapter-nav .disabled { color: var(--ink-faint); opacity: 0.55; }
+.nav-prev { text-align: left; flex: 1; }
+.nav-next { text-align: right; flex: 1; }
+
+/* ---------- 頁尾 ---------- */
+.site-foot {
+  text-align: center;
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-indent: 0.25em;
+  color: var(--ink-faint);
+  padding: 3rem 1rem 4rem;
+}
+
+@media (max-width: 480px) {
+  body { line-height: 1.85; }
+  .chapter-nav { font-size: 0.8rem; }
+}
