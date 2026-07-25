@@ -160,6 +160,7 @@ def chapter_page(ch, prev_ch, next_ch) -> str:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
 <title>{html.escape(ch['title'])}｜{NOVEL_TITLE}</title>
 <link rel="stylesheet" href="../assets/style.css">
 </head>
@@ -224,6 +225,7 @@ def index_page(chapters) -> str:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
 <title>{NOVEL_TITLE}｜{NOVEL_TITLE_EN}</title>
 <link rel="stylesheet" href="assets/style.css">
 </head>
