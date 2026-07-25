@@ -3,14 +3,15 @@
 :root {
   --reading-scale: 1;               /* 由 reader.js 依 localStorage 調整 */
 
-  --bg: #f4f1ea;
-  --surface: #fbf9f4;
-  --ink: #2b2824;
-  --ink-soft: #6b6459;
-  --ink-faint: #9a9284;
-  --rule: #ddd6c8;
-  --accent: #8a7a5c;
-  --link: #6b5d43;
+  /* 預設暗色（不隨系統設定），讀者可用工具列按鈕切換，選擇會被記住 */
+  --bg: #16161a;
+  --surface: #1d1d22;
+  --ink: #d7d2c8;
+  --ink-soft: #9a948a;
+  --ink-faint: #6c675d;
+  --rule: #33323a;
+  --accent: #b3a67e;
+  --link: #c8b98f;
 
   --serif: "Noto Serif CJK TC", "Noto Serif TC", "Songti TC", "Source Han Serif TC",
            "STSong", "SimSun", Georgia, "Times New Roman", serif;
@@ -18,20 +19,7 @@
           -apple-system, "Segoe UI", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #16161a;
-    --surface: #1d1d22;
-    --ink: #d7d2c8;
-    --ink-soft: #9a948a;
-    --ink-faint: #6c675d;
-    --rule: #33323a;
-    --accent: #b3a67e;
-    --link: #c8b98f;
-  }
-}
-
-/* 手動切換覆蓋系統設定 */
+/* 手動切換 */
 :root[data-theme="light"] {
   --bg: #f4f1ea; --surface: #fbf9f4; --ink: #2b2824; --ink-soft: #6b6459;
   --ink-faint: #9a9284; --rule: #ddd6c8; --accent: #8a7a5c; --link: #6b5d43;

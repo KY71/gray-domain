@@ -8,8 +8,7 @@
 
   function currentTheme() {
     var t = root.getAttribute("data-theme");
-    if (t) return t;
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    return t || "dark"; // 預設暗色，不隨系統設定
   }
   function syncThemeButtons() {
     var dark = currentTheme() === "dark";
